@@ -15,22 +15,29 @@ import { AuthService } from '../../auth/services/auth.service';
 export class LoginComponent {
   email: string = '';
   password: string = '';
+  errorMessage: string = '';
 
   constructor(private authService: AuthService, private router: Router) {}
 
   onSubmit() {
-    this.authService.login(this.email, this.password).subscribe(response => {
-      if (response && response.token) {
-        this.authService.setToken(response.token);
-        if (response.user.usertype === 'admin') {
-          this.router.navigate(['/admin-dashboard']);
+    this.authService.login(this.email, this.password).subscribe(
+      response => {
+        if (response && response.token) {
+          this.authService.setToken(response.token); // Store token in localStorage or memory
+          this.authService.setCurrentUser(response.user); // Store user data in service
+          if (response.user.usertype === 'admin') {
+            this.router.navigate(['/admin-dashboard']);
+          } else {
+            this.router.navigate(['/dashboard']);
+          }
         } else {
-          this.router.navigate(['/dashboard']);
+          this.errorMessage = 'Login failed. Please check your credentials.';
         }
+      },
+      error => {
+        console.error('Login failed', error);
+        this.errorMessage = 'Login failed. Please try again later.';
       }
-    }, error => {
-      console.error('Login failed', error);
-      // Handle error (e.g., show error message)
-    });
+    );
   }
 }

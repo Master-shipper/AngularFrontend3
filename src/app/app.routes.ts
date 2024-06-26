@@ -3,6 +3,7 @@ import { authGuard } from './auth/guards/auth.guard';
 import { CategoriesComponent } from './pages/admin/categories/categories.component';
 import { LayoutComponent } from './pages/admin/layout/layout.component';
 import { ProductsComponent } from './pages/admin/products/products.component';
+import { UsersComponent } from './pages/admin/users/users.component';
 import { LoginComponent } from './pages/login/login.component';
 import { DashboardComponent } from './pages/website/dashboard/dashboard.component';
 
@@ -31,6 +32,11 @@ export const routes: Routes = [
             path: 'category',
             component: CategoriesComponent,
             title: 'Category'
+          },
+          {
+            path: 'users',
+            component: UsersComponent,
+            title: 'Users'
           }
         ]
       },
