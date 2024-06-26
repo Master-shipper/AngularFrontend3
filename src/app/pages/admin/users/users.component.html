@@ -1,20 +1,42 @@
 <p-card header="User Information">
+    <p-toolbar styleClass="mb-4 gap-2">
+        <ng-template pTemplate="left">
+        </ng-template>
+    </p-toolbar>
+
     <ng-container *ngIf="users.length > 0; else loading">
-      <p-table [value]="users" responsiveLayout="scroll">
+      <p-table 
+      [value]="users"
+      responsiveLayout="scroll"
+      [paginator]="true"
+        [rows]="5"
+        [tableStyle]="{ 'min-width': '50rem' }"
+        [rowsPerPageOptions]="[5, 10, 20]">
         <ng-template pTemplate="header">
           <tr>
+            <th style="width: 4rem"><p-tableHeaderCheckbox /></th>
             <th>Username</th>
             <th>Email</th>
             <th>Phone</th>
             <th>Address</th>
+            <th>Action</th>
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-user>
           <tr>
+            <td>
+                <p-tableCheckbox [value]="user" />
+            </td>
             <td>{{ user.userName }}</td>
             <td>{{ user.email }}</td>
             <td>{{ user.phone }}</td>
             <td>{{ user.address }}</td>
+            <td>
+              <p-button icon="pi pi-user-edit" (click)="showDialog()" (click)="showUserDetails(user._id)" />
+            </td>
+            <td>
+                <p-button icon="pi pi-user-minus" (click)="showDialog()" (click)="deleteUser(user._id)" severity="danger" [outlined]="true"></p-button>
+            </td>
           </tr>
         </ng-template>
       </p-table>
@@ -22,5 +44,26 @@
     <ng-template #loading>
       <p>Loading user data...</p>
     </ng-template>
+  
+    <p-dialog 
+      header="User Details" 
+      [(visible)]="visible" 
+      [modal]="true" 
+      [style]="{ width: '25rem' }">
+      <ng-template pTemplate="header">
+        <img [src]="userDetails.profile" alt="User Profile Image" style="max-width: 50%; height: auto;">
+      </ng-template>
+      <ng-template pTemplate="content">
+        <div>
+          <p><strong>Username:</strong> {{ userDetails.userName }}</p>
+          <p><strong>Email:</strong> {{ userDetails.email }}</p>
+          <p><strong>Phone:</strong> {{ userDetails.phone }}</p>
+          <p><strong>Address:</strong> {{ userDetails.address?.join(', ') }}</p>
+        </div>
+      </ng-template>
+      <ng-template pTemplate="footer">
+        <button type="button" class="btn btn-secondary" (click)="visible = false">Close</button>
+      </ng-template>
+    </p-dialog>
   </p-card>
   

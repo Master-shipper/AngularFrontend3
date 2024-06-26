@@ -1,38 +1,68 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { CardModule } from 'primeng/card';
-import { TableModule } from 'primeng/table';
+import { DialogService } from 'primeng/dynamicdialog';
+import { ImportsModule } from '../../../imports';
+
+
 
 @Component({
   selector: 'app-users',
   standalone: true,
-  imports: [CommonModule, TableModule, CardModule],
+  imports: [CommonModule, ImportsModule
+  ],
   templateUrl: './users.component.html',
   styleUrls: ['./users.component.css']
 })
 export class UsersComponent implements OnInit {
-  users: any[] = []; // Initialize as an empty array to hold multiple users
+  users: any[] = [];
+  userDetails: any = {};
+  visible: boolean = false;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private dialogService: DialogService) {}
+
+    showDialog() {
+        this.visible = true;
+    }
+
 
   ngOnInit() {
-    this.getUsers(); // Fetch all users when component initializes
+    this.getUsers();
   }
 
   getUsers() {
-    this.http.get('http://localhost:8080/api/v1/user/getUsers') // Assuming your backend API endpoint for fetching all users
-      .subscribe({
-        next: (response: any) => {
-          if (response.success) {
-            this.users = response.users; // Assuming the backend returns an array of users in 'users' field
-          } else {
-            console.error(response.message);
-          }
-        },
-        error: (err) => {
-          console.error('Error fetching users:', err);
+    this.http.get<any>('http://localhost:8080/api/v1/user/getUsers').subscribe({
+      next: (response: any) => {
+        if (response.success) {
+          this.users = response.users;
+        } else {
+          console.error('Failed to fetch users:', response.message);
         }
-      });
+      },
+      error: (error) => {
+        console.error('Error fetching users:', error);
+      }
+    });
+  }
+
+  showUserDetails(userId: string) {
+    this.http.get<any>(`http://localhost:8080/api/v1/user/getUser/${userId}`).subscribe({
+      next: (response: any) => {
+        if (response.success) {
+          this.userDetails = response.user;
+          this.visible = true;
+        } else {
+          console.error('Failed to fetch user details:', response.message);
+        }
+      },
+      error: (error) => {
+        console.error('Error fetching user details:', error);
+      }
+    });
+  }
+
+  deleteUser(userId: string) {
+    // Implement delete logic here
+    console.log('Deleting user with ID:', userId);
   }
 }
